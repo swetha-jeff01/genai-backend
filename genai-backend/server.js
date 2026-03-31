@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const { OpenAI } = require('openai'); // We still use this package!
+const { OpenAI } = require('openai');
 
 const app = express();
 
@@ -9,14 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("🚀 GenAI Backend is running successfully!");
-});
-
-// Initialize AI using Groq's free endpoint
+// Initialize AI using Groq
 const ai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
-  baseURL: "https://api.groq.com/openai/v1", // This points it to Groq instead of OpenAI
+  baseURL: "https://api.groq.com/openai/v1",
 });
 
 app.post('/api/generate', async (req, res) => {
@@ -25,7 +21,7 @@ app.post('/api/generate', async (req, res) => {
     
     // Call the AI model
     const completion = await ai.chat.completions.create({
-      model: "llama3-8b-8192", // Groq's super fast, free model
+      model: "llama3-8b-8192",
       messages: [
         { role: "system", content: "You are a social media expert. Write a viral, engaging tweet." },
         { role: "user", content: `Write a tweet about: ${topic}` }
@@ -43,5 +39,5 @@ app.post('/api/generate', async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Backend server is running on http://localhost:${PORT}`);
+  console.log(`✅ Backend server is running on port ${PORT}`);
 });
