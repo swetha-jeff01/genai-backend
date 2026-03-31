@@ -15,7 +15,8 @@ app.get("/", (req, res) => {
 
 // Initialize AI using Groq's free endpoint
 const ai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
 });
 
 app.post('/api/generate', async (req, res) => {
@@ -24,7 +25,7 @@ app.post('/api/generate', async (req, res) => {
     
     // Call the AI model
     const completion = await ai.chat.completions.create({
-      model: "gpt-4o-mini", // Groq's super fast, free model
+      model: "llama3-8b-8192", // Groq's super fast, free model
       messages: [
         { role: "system", content: "You are a social media expert. Write a viral, engaging tweet." },
         { role: "user", content: `Write a tweet about: ${topic}` }
