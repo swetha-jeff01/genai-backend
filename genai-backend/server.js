@@ -15,7 +15,7 @@ app.get("/", (req, res) => {
 
 // Initialize AI using Groq's free endpoint
 const ai = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
   baseURL: "https://api.groq.com/openai/v1", // This points it to Groq instead of OpenAI
 });
 
