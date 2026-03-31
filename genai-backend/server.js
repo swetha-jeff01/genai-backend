@@ -36,10 +36,12 @@ app.post('/api/generate', async (req, res) => {
     res.json({ result: completion.choices[0].message.content });
 
   } catch (error) {
-    console.error("Error generating tweet:", error);
-    res.status(500).json({ error: "Failed to generate tweet" });
+  console.error("FULL ERROR:", error);
+  res.status(500).json({ 
+    error: error.message,
+    details: error.response?.data
+  });
   }
-});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
