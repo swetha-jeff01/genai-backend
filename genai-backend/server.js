@@ -9,6 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("🚀 GenAI Backend is running successfully!");
+});
+
 // Initialize AI using Groq's free endpoint
 const ai = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
