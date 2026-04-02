@@ -41,48 +41,45 @@ const ai = new OpenAI({
 app.post('/api/generate', async (req, res) => {
   try { 
     const userPrompt = req.body.prompt;
+    if (!userPrompt) return res.status(400).json({ error: "Please provide a prompt." });
 
-    if (!userPrompt) {
-      return res.status(400).json({ error: "Please provide a prompt." });
-    }
-
-    // A. Generate Text using Groq
+    // 1. Generate Text
     const completion = await ai.chat.completions.create({
       model: "llama-3.1-8b-instant", 
       messages: [
-        { role: "system", content: "You are a helpful AI assistant that writes engaging, short tweets. Do not include options like 'Tweet 1, Tweet 2', just give me ONE single tweet." }, 
+        { role: "system", content: "You are a helpful AI assistant that writes engaging, short tweets. Give me ONE single tweet." }, 
         { role: "user", content: userPrompt }
       ],
     });
-
     const generatedTweet = completion.choices[0].message.content;
 
-    // B. Generate Image URL (with random seed so it never gets stuck)
+    // 2. Generate Image URL
     const randomSeed = Math.floor(Math.random() * 100000);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(userPrompt)}?seed=${randomSeed}&width=1024&height=1024&nologo=true`;
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(userPrompt)}?seed=${randomSeed}&width=512&height=512&nologo=true`;
 
-    // C. Save it to the Database!
+    // 3. SECRETLY DOWNLOAD THE IMAGE IN THE BACKEND
+    const imageResponse = await fetch(imageUrl);
+    const arrayBuffer = await imageResponse.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Image = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+
+    // 4. Save the URL to Database (Saves space)
     const newTweet = new SavedTweet({
       prompt: userPrompt,
       tweetText: generatedTweet,
       imageUrl: imageUrl
     });
-    
     await newTweet.save();
-    console.log("💾 Successfully saved new tweet to MongoDB!");
 
-    // D. Send both back to the frontend
+    // 5. Send the RAW IMAGE DATA to the frontend
     res.json({ 
       result: generatedTweet,
-      image: imageUrl 
+      image: base64Image // Notice we send the raw data, not the URL!
     });
 
   } catch (error) { 
     console.error("FULL ERROR:", error);
-    res.status(500).json({ 
-      error: error.message,
-      details: error.response?.data
-    });
+    res.status(500).json({ error: error.message });
   }
 });
 
