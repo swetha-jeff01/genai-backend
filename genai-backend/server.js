@@ -55,7 +55,7 @@ app.post('/api/generate', async (req, res) => {
 
     // 2. Generate Image URL
     const randomSeed = Math.floor(Math.random() * 100000);
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(userPrompt)}?seed=${randomSeed}&width=512&height=512&nologo=true`;
+    const imageUrl = `https://picsum.photos/seed/${encodeURIComponent(userPrompt)}/512/512`;
 
     // 3. SECRETLY DOWNLOAD THE IMAGE IN THE BACKEND
     const imageResponse = await fetch(imageUrl);
